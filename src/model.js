@@ -31,7 +31,7 @@ export function computeVo2(speedKmh, inclinePct, economyPct) {
   const ef = (economyPct || 100) / 100;
   const sm = speedToMperMin(speedKmh);
   const g = gradeFrac(inclinePct);
-  const vo2 = (3.5 + 0.2 * sm + 0.9 * sm * g) * ef;
+  const vo2 = 3.5 + (0.2 * sm + 0.9 * sm * g) * ef;
   return { vo2, mets: vo2 / 3.5 };
 }
 
@@ -41,12 +41,11 @@ export function computeVo2(speedKmh, inclinePct, economyPct) {
  */
 export function solveSpeedForVo2(targetVo2, inclinePct, economyPct) {
   const ef = (economyPct || 100) / 100;
-  const vbt = targetVo2 / ef;
-  if (vbt <= 3.5) return null;
+  if (targetVo2 <= 3.5) return null;
   const g = gradeFrac(inclinePct);
-  const d = 0.2 + 0.9 * g;
+  const d = (0.2 + 0.9 * g) * ef;
   if (d <= 0) return null;
-  const sm = (vbt - 3.5) / d;
+  const sm = (targetVo2 - 3.5) / d;
   if (sm <= 0) return null;
   return sm * 60 / 1000;
 }
@@ -57,10 +56,9 @@ export function solveSpeedForVo2(targetVo2, inclinePct, economyPct) {
  */
 export function solveInclineForVo2(targetVo2, speedKmh, economyPct) {
   const ef = (economyPct || 100) / 100;
-  const vbt = targetVo2 / ef;
-  if (vbt <= 3.5) return null;
+  if (targetVo2 <= 3.5) return null;
   const sm = speedToMperMin(speedKmh);
-  const num = vbt - 3.5 - 0.2 * sm;
+  const num = (targetVo2 - 3.5) / ef - 0.2 * sm;
   const den = 0.9 * sm;
   if (den <= 0) return null;
   const gp = (num / den) * 100;
@@ -87,9 +85,9 @@ export function computeElevation(distanceKm, inclinePct) {
  * Get economy category label key for a given economy percentage.
  */
 export function getEconomyCategory(pct) {
-  if (pct <= 85) return 'veryEconomical';
-  if (pct <= 95) return 'economical';
-  if (pct <= 103) return 'typical';
+  if (pct <= 90) return 'veryEconomical';
+  if (pct <= 99) return 'economical';
+  if (pct === 100) return 'typical';
   if (pct <= 110) return 'slightlyLess';
   return 'clearlyLess';
 }

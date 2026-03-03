@@ -8,14 +8,17 @@ import { t } from './i18n.js';
 let tableBody = null;
 let summaryEls = null;
 let getSettings = null; // callback to get current { bodyMassKg, economyPct }
+let onDataChange = null; // callback fired after any data mutation
 
 /**
  * Initialise the table module with DOM references and a settings getter.
+ * @param {Function} [onDataChangeCb] - called after any data mutation (add/edit/delete/reorder)
  */
-export function initTable(tbodyEl, summaryElements, settingsGetter) {
+export function initTable(tbodyEl, summaryElements, settingsGetter, onDataChangeCb) {
   tableBody = tbodyEl;
   summaryEls = summaryElements;
   getSettings = settingsGetter;
+  onDataChange = onDataChangeCb || null;
 }
 
 /**
@@ -61,6 +64,7 @@ function recalcRow(idx, speedEl, paceEl, inclineEl, durationEl, distanceEl, tr) 
   tr.querySelector('.row-mets').textContent = mets.toFixed(1);
   tr.querySelector('.row-kcal').textContent = kcal.toFixed(0);
   updateSummary();
+  if (onDataChange) onDataChange();
 }
 
 /**
@@ -84,7 +88,7 @@ export function renderTable() {
       <td class="row-vo2">${row.vo2.toFixed(1)}</td>
       <td class="row-mets">${row.mets.toFixed(1)}</td>
       <td class="row-kcal">${row.kcal.toFixed(0)}</td>
-      <td><button type="button" class="row-delete" aria-label="Delete">✕</button></td>`;
+      <td><button type="button" class="row-delete" aria-label="Delete interval ${idx + 1}">✕</button></td>`;
     tableBody.appendChild(tr);
 
     const speedEl = tr.querySelector('.row-speed');
@@ -102,6 +106,7 @@ export function renderTable() {
     tr.querySelector('.row-delete').addEventListener('click', () => {
       removeInterval(idx);
       renderTable();
+      if (onDataChange) onDataChange();
     });
   });
 
@@ -123,6 +128,7 @@ export function renderTable() {
       if (dragStart !== null && i !== dragStart) {
         reorderIntervals(dragStart, i);
         renderTable();
+        if (onDataChange) onDataChange();
       }
     });
   });

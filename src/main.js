@@ -5,7 +5,7 @@ import { t, getLanguage, toggleLanguage } from './i18n.js';
 import { addInterval, getSessionData, getSessionLength, recomputeAllRows } from './session.js';
 import { initTable, renderTable, updateSummary, updateTableLabels } from './table.js';
 import { updateElevationChart, initChart } from './chart.js';
-import { downloadTxt, copyTxtToClipboard, copyPlotToClipboard, downloadXlsx, downloadPdf } from './export.js';
+import { downloadTxt, copyTxtToClipboard, downloadXlsx, downloadPdf } from './export.js';
 
 // DOM references
 const els = {
@@ -29,8 +29,6 @@ const els = {
   helpToggle: document.getElementById('help-toggle'),
   helpPanel: document.getElementById('help-panel'),
   helpContent: document.getElementById('help-content'),
-  yearSpan: document.getElementById('current-year'),
-  canvas: document.getElementById('elevation-chart'),
 };
 
 // Summary footer elements
@@ -74,7 +72,9 @@ function getExportParams() {
 els.economy.addEventListener('input', () => {
   const v = parseInt(els.economy.value, 10) || 100;
   els.economyDisplay.textContent = v + '%';
-  els.economyLabel.textContent = t(getEconomyCategory(v));
+  const catLabel = t(getEconomyCategory(v));
+  els.economyLabel.textContent = catLabel;
+  els.economy.setAttribute('aria-valuetext', `${v}% – ${catLabel}`);
 
   // Recompute all rows when economy changes
   if (getSessionLength() > 0) {
@@ -103,7 +103,7 @@ els.speed.addEventListener('input', () => {
 
 els.pace.addEventListener('input', () => {
   const p = parsePaceToMinutes(els.pace.value);
-  if (isFinite(p) && p > 0 && !els.speed.value) els.speed.value = (60 / p).toFixed(2);
+  if (isFinite(p) && p > 0) els.speed.value = (60 / p).toFixed(2);
 });
 
 // ——— VO₂ preview button ———
@@ -201,7 +201,9 @@ document.getElementById('btn-download-pdf').addEventListener('click', () => down
 
 // ——— Language toggle ———
 els.langToggle.addEventListener('click', () => {
-  toggleLanguage();
+  const lang = toggleLanguage();
+  document.documentElement.lang = lang;
+  document.title = t('title');
   updateAllText();
   renderTable();
   updateElevationChart();
@@ -262,7 +264,14 @@ function updateAllText() {
   // Session
   document.getElementById('label-session-name').textContent = t('labelSessionName');
   els.sessionName.placeholder = t('sessionNamePlaceholder');
-  document.getElementById('export-note').innerHTML = t('exportNote') + ' ' + new Date().getFullYear() + '.';
+  const noteEl = document.getElementById('export-note');
+  noteEl.textContent = t('exportNote') + ' ' + new Date().getFullYear() + '.';
+
+  // Footer
+  const footerEl = document.querySelector('.footer');
+  if (footerEl) {
+    footerEl.innerHTML = `${t('footer')} · <a href="https://rikhard.fi/calculators" target="_blank" rel="noopener">rikhard.fi</a>`;
+  }
 
   // Table headers
   updateTableLabels();
@@ -296,11 +305,8 @@ function renderHelp() {
 
 /** Initialise the app. */
 function init() {
-  // Year
-  if (els.yearSpan) els.yearSpan.textContent = new Date().getFullYear();
-
-  // Init table module
-  initTable(els.sessionBody, summaryEls, getSettings);
+  // Init table module with chart-update callback
+  initTable(els.sessionBody, summaryEls, getSettings, () => updateElevationChart());
 
   // Init chart
   const canvasEl = document.getElementById('elevation-chart');

@@ -65,6 +65,7 @@ const translations = {
     thTotals: 'Total / mean',
 
     exportNote: 'Export includes athlete settings, running economy, calculation background and © Rikhard Mäki-Heikkilä – rikhard.fi/calculators –',
+    chartEmpty: 'Add intervals to see elevation profile',
 
     // Alerts
     alertEnterSpeed: 'Enter speed (km/h) or pace (min/km) first.',
@@ -101,6 +102,8 @@ const translations = {
       'Calories are estimated from VO₂ assuming that each litre of oxygen consumed corresponds to approximately 5 kcal of energy expenditure. This is a standard practical approximation in exercise physiology.',
       'The calculation is most appropriate for steady-state treadmill running at moderate-to-high speeds and inclines. It does not account for sprinting mechanics, handrail use, or large fluctuations in speed.',
     ],
+    footer: 'Treadmill VO₂ & Session Builder',
+
     helpFinnishTitle: 'Käyttö lyhyesti (suomeksi)',
     helpFinnishSteps: [
       'Syötä <strong>kehon paino</strong> ja säädä <strong>juoksun taloudellisuus</strong> -liukusäädintä.',
@@ -172,6 +175,7 @@ const translations = {
     thTotals: 'Yhteensä / keskim.',
 
     exportNote: 'Vienti sisältää urheilijan asetukset, juoksun taloudellisuuden, laskentaperusteen ja © Rikhard Mäki-Heikkilä – rikhard.fi/calculators –',
+    chartEmpty: 'Lisää vetoja nähdäksesi nousuprofiilin',
 
     alertEnterSpeed: 'Syötä nopeus (km/h) tai vauhti (min/km) ensin.',
     alertEnterSpeedIncline: 'Syötä nopeus ja kaltevuus ensin.',
@@ -206,6 +210,8 @@ const translations = {
       'Kalorit arvioidaan VO₂:sta olettaen, että yksi litra happea vastaa noin 5 kcal energiankulutusta. Tämä on yleinen käytännön likiarvo liikuntafysiologiassa.',
       'Laskenta soveltuu parhaiten tasaisen vauhdin juoksumattojuoksuun kohtalaisilla tai korkeilla nopeuksilla ja kaltevuuksilla. Se ei huomioi pikajuoksun mekaniikkaa, käsijohteisiin tukeutumista tai suuria nopeudenvaihteluita.',
     ],
+    footer: 'Juoksumaton VO₂-laskuri ja harjoitussuunnittelija',
+
     helpFinnishTitle: '',
     helpFinnishSteps: [],
   },

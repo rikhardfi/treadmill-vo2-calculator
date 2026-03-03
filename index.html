@@ -40,7 +40,7 @@
           <label for="economy" id="label-economy">Running economy vs typical (%)</label>
           <small id="economy-hint">100% ≈ "typical" trained runner. Lower = more economical, higher = less economical.</small>
           <div class="range-wrapper">
-            <input id="economy" type="range" min="80" max="120" value="100" step="1">
+            <input id="economy" type="range" min="80" max="120" value="100" step="1" aria-describedby="economy-hint" aria-valuetext="100% – Typical">
             <span id="economy-display">100%</span>
           </div>
           <div class="economy-helper">
@@ -80,31 +80,31 @@
           <div class="field-group">
             <label for="vo2" id="label-vo2">VO₂ preview / target (mL/kg/min)</label>
             <div class="inline-row">
-              <input id="vo2" type="number" min="10" max="90" step="0.1">
-              <button type="button" id="vo2-from-inputs" class="btn-ghost" data-i18n="btn-use-speed">Use speed &amp; incline</button>
+              <input id="vo2" type="number" min="10" max="90" step="0.1" aria-describedby="vo2-hint">
+              <button type="button" id="vo2-from-inputs" class="btn-ghost">Use speed &amp; incline</button>
             </div>
             <small id="vo2-hint">Click to estimate VO₂ from inputs, or type your own target.</small>
           </div>
           <div class="field-group">
             <label for="solve-mode" id="label-solve">Adjust automatically to match VO₂</label>
             <div class="inline-row">
-              <select id="solve-mode">
+              <select id="solve-mode" aria-describedby="solve-hint">
                 <option value="vo2" id="solve-opt-vo2">Calculate VO₂ (keep speed & incline)</option>
                 <option value="speed" id="solve-opt-speed">Calculate speed (keep VO₂ & incline)</option>
                 <option value="incline" id="solve-opt-incline">Calculate incline (keep VO₂ & speed)</option>
               </select>
-              <button type="button" id="solve-btn" class="btn-ghost" data-i18n="btn-solve">Solve</button>
+              <button type="button" id="solve-btn" class="btn-ghost">Solve</button>
             </div>
             <small id="solve-hint">Example: choose "Calculate speed", set VO₂ = 45 and incline = 7%, then click "Solve".</small>
           </div>
         </div>
-        <button type="button" id="add-interval" class="btn-primary" data-i18n="btn-add">+ Add interval to session</button>
+        <button type="button" id="add-interval" class="btn-primary">+ Add interval to session</button>
       </div>
 
       <!-- Elevation chart -->
       <section class="chart-section" aria-label="Elevation profile">
         <div class="chart-container">
-          <canvas id="elevation-chart"></canvas>
+          <canvas id="elevation-chart" role="img" aria-label="Elevation profile chart"></canvas>
         </div>
       </section>
 
@@ -119,17 +119,17 @@
           <table class="session-table">
             <thead>
               <tr>
-                <th>#</th>
-                <th id="th-speed">Speed<br>(km/h)</th>
-                <th id="th-pace">Pace<br>(min/km)</th>
-                <th id="th-incline">Incline<br>(%)</th>
-                <th id="th-duration">Duration<br>(min)</th>
-                <th id="th-distance">Distance<br>(km)</th>
-                <th id="th-elevation">Elevation<br>(m)</th>
-                <th id="th-vo2">VO₂<br>(mL/kg/min)</th>
-                <th id="th-mets">METs</th>
-                <th id="th-energy">Energy<br>(kcal)</th>
-                <th></th>
+                <th scope="col">#</th>
+                <th scope="col" id="th-speed">Speed<br>(km/h)</th>
+                <th scope="col" id="th-pace">Pace<br>(min/km)</th>
+                <th scope="col" id="th-incline">Incline<br>(%)</th>
+                <th scope="col" id="th-duration">Duration<br>(min)</th>
+                <th scope="col" id="th-distance">Distance<br>(km)</th>
+                <th scope="col" id="th-elevation">Elevation<br>(m)</th>
+                <th scope="col" id="th-vo2">VO₂<br>(mL/kg/min)</th>
+                <th scope="col" id="th-mets">METs</th>
+                <th scope="col" id="th-energy">Energy<br>(kcal)</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody id="session-body"></tbody>
@@ -151,12 +151,12 @@
           </table>
         </div>
         <div class="export-row">
-          <button type="button" id="btn-download-txt" class="btn-ghost" data-i18n="btn-download-txt">Download TXT</button>
-          <button type="button" id="btn-copy-txt" class="btn-ghost" data-i18n="btn-copy-txt">Copy TXT</button>
-          <button type="button" id="btn-download-xlsx" class="btn-ghost" data-i18n="btn-download-xlsx">Download XLSX</button>
-          <button type="button" id="btn-download-pdf" class="btn-ghost" data-i18n="btn-download-pdf">Download PDF</button>
+          <button type="button" id="btn-download-txt" class="btn-ghost">Download TXT</button>
+          <button type="button" id="btn-copy-txt" class="btn-ghost">Copy TXT</button>
+          <button type="button" id="btn-download-xlsx" class="btn-ghost">Download XLSX</button>
+          <button type="button" id="btn-download-pdf" class="btn-ghost">Download PDF</button>
         </div>
-        <small class="export-note" id="export-note">Export includes athlete settings, running economy, calculation background and © Rikhard Mäki-Heikkilä – rikhard.fi/calculators – <span id="current-year"></span>.</small>
+        <small class="export-note" id="export-note"></small>
       </div>
 
       <!-- Footer -->

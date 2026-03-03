@@ -1,14 +1,4 @@
 /**
- * Parse a locale-flexible float (accepts both comma and dot as decimal separator).
- */
-export function parseLocaleFloat(value) {
-  if (value == null) return NaN;
-  const s = String(value).trim().replace(',', '.');
-  const n = parseFloat(s);
-  return isFinite(n) ? n : NaN;
-}
-
-/**
  * Clamp a number between min and max.
  */
 export function clamp(val, min, max) {
@@ -26,7 +16,7 @@ export function parsePaceToMinutes(value) {
     const [m, sec] = s.split(':');
     const min = parseInt(m, 10);
     const secs = parseInt(sec, 10);
-    return (isFinite(min) && isFinite(secs) && secs >= 0 && secs < 60)
+    return (isFinite(min) && isFinite(secs) && min >= 0 && secs >= 0 && secs < 60)
       ? min + secs / 60
       : NaN;
   }
