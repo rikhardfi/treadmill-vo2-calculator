@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Treadmill VO₂ & Session Builder</title>
+    <meta name="description" content="Estimate running VO₂ from treadmill speed and incline. Build interval sessions with distance, elevation, METs and calorie tracking." />
+    <meta property="og:title" content="Treadmill VO₂ & Session Builder" />
+    <meta property="og:description" content="Estimate running VO₂ from treadmill speed and incline. Build interval sessions." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://rikhardfi.github.io/treadmill-vo2-calculator/" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <h1 id="app-title">Treadmill VO₂ & Session Builder</h1>
+          <p id="app-subtitle">Estimate running VO₂ from treadmill speed and incline</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-icon" id="help-toggle" type="button" aria-label="Help" title="Help">?</button>
+          <button class="btn-icon" id="lang-toggle" type="button" aria-label="Switch language" title="Switch language">FI</button>
+        </div>
+      </header>
+
+      <!-- Help Panel -->
+      <div class="help-panel" id="help-panel" role="region" aria-label="Help">
+        <div id="help-content"></div>
+      </div>
+
+      <!-- 1. Athlete settings -->
+      <div class="card">
+        <h2 id="section-athlete">1. Athlete settings</h2>
+        <div class="field-row">
+          <label for="body-mass" id="label-body-mass">Body mass (kg)</label>
+          <input id="body-mass" type="number" min="30" max="150" step="0.5" value="70">
+        </div>
+        <div class="field-row">
+          <label for="economy" id="label-economy">Running economy vs typical (%)</label>
+          <small id="economy-hint">100% ≈ "typical" trained runner. Lower = more economical, higher = less economical.</small>
+          <div class="range-wrapper">
+            <input id="economy" type="range" min="80" max="120" value="100" step="1">
+            <span id="economy-display">100%</span>
+          </div>
+          <div class="economy-helper">
+            <span id="economy-label">Typical</span>
+            <small id="economy-scale">80–90%: very economical · 91–99%: economical · 100%: typical · 101–110%: slightly less · 111–120%: clearly less</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Interval settings -->
+      <div class="card">
+        <h2 id="section-interval">2. Interval settings</h2>
+        <div class="grid">
+          <div class="field-group">
+            <label for="speed" id="label-speed">Speed (km/h)</label>
+            <input id="speed" type="number" min="4" max="25" step="0.1">
+            <small id="label-or-pace">Or enter pace:</small>
+            <div class="inline-field">
+              <label for="pace" id="label-pace">Pace (min/km, mm:ss)</label>
+              <input id="pace" type="text" placeholder="4:30">
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="incline" id="label-incline">Incline (%)</label>
+            <input id="incline" type="number" min="0" max="25" step="0.5" value="1">
+          </div>
+          <div class="field-group">
+            <label for="duration" id="label-duration">Duration (min)</label>
+            <input id="duration" type="number" min="0.5" max="240" step="0.1">
+            <small id="label-or">or</small>
+            <label for="distance" id="label-distance">Distance (km)</label>
+            <input id="distance" type="number" min="0.1" max="50" step="0.01">
+            <small id="label-fill-either">Fill either duration or distance.</small>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="field-group">
+            <label for="vo2" id="label-vo2">VO₂ preview / target (mL/kg/min)</label>
+            <div class="inline-row">
+              <input id="vo2" type="number" min="10" max="90" step="0.1">
+              <button type="button" id="vo2-from-inputs" class="btn-ghost" data-i18n="btn-use-speed">Use speed &amp; incline</button>
+            </div>
+            <small id="vo2-hint">Click to estimate VO₂ from inputs, or type your own target.</small>
+          </div>
+          <div class="field-group">
+            <label for="solve-mode" id="label-solve">Adjust automatically to match VO₂</label>
+            <div class="inline-row">
+              <select id="solve-mode">
+                <option value="vo2" id="solve-opt-vo2">Calculate VO₂ (keep speed & incline)</option>
+                <option value="speed" id="solve-opt-speed">Calculate speed (keep VO₂ & incline)</option>
+                <option value="incline" id="solve-opt-incline">Calculate incline (keep VO₂ & speed)</option>
+              </select>
+              <button type="button" id="solve-btn" class="btn-ghost" data-i18n="btn-solve">Solve</button>
+            </div>
+            <small id="solve-hint">Example: choose "Calculate speed", set VO₂ = 45 and incline = 7%, then click "Solve".</small>
+          </div>
+        </div>
+        <button type="button" id="add-interval" class="btn-primary" data-i18n="btn-add">+ Add interval to session</button>
+      </div>
+
+      <!-- Elevation chart -->
+      <section class="chart-section" aria-label="Elevation profile">
+        <div class="chart-container">
+          <canvas id="elevation-chart"></canvas>
+        </div>
+      </section>
+
+      <!-- 3. Session overview -->
+      <div class="card">
+        <h2 id="section-session">3. Session overview</h2>
+        <div class="field-row">
+          <label for="session-name" id="label-session-name">Session name</label>
+          <input id="session-name" type="text" placeholder="e.g. VO₂ intervals 4 × 5 min">
+        </div>
+        <div class="table-wrapper">
+          <table class="session-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th id="th-speed">Speed<br>(km/h)</th>
+                <th id="th-pace">Pace<br>(min/km)</th>
+                <th id="th-incline">Incline<br>(%)</th>
+                <th id="th-duration">Duration<br>(min)</th>
+                <th id="th-distance">Distance<br>(km)</th>
+                <th id="th-elevation">Elevation<br>(m)</th>
+                <th id="th-vo2">VO₂<br>(mL/kg/min)</th>
+                <th id="th-mets">METs</th>
+                <th id="th-energy">Energy<br>(kcal)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="session-body"></tbody>
+            <tfoot>
+              <tr class="summary-row">
+                <th id="th-totals">Total / mean</th>
+                <th id="sum-speed">0.0</th>
+                <th id="sum-pace">0:00</th>
+                <th id="sum-incline">0.0</th>
+                <th id="sum-duration">0.0</th>
+                <th id="sum-distance">0.00</th>
+                <th id="sum-elev">0</th>
+                <th id="sum-vo2">0.0</th>
+                <th id="sum-mets">0.0</th>
+                <th id="sum-kcal">0</th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="export-row">
+          <button type="button" id="btn-download-txt" class="btn-ghost" data-i18n="btn-download-txt">Download TXT</button>
+          <button type="button" id="btn-copy-txt" class="btn-ghost" data-i18n="btn-copy-txt">Copy TXT</button>
+          <button type="button" id="btn-download-xlsx" class="btn-ghost" data-i18n="btn-download-xlsx">Download XLSX</button>
+          <button type="button" id="btn-download-pdf" class="btn-ghost" data-i18n="btn-download-pdf">Download PDF</button>
+        </div>
+        <small class="export-note" id="export-note">Export includes athlete settings, running economy, calculation background and © Rikhard Mäki-Heikkilä – rikhard.fi/calculators – <span id="current-year"></span>.</small>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        Treadmill VO₂ & Session Builder · <a href="https://rikhard.fi/calculators" target="_blank" rel="noopener">rikhard.fi</a>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
